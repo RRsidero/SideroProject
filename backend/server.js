@@ -7,6 +7,16 @@ const dotenv = require("dotenv").config();
 // Initialise Express
 const app = express();
 
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+// Test to See if GET Method Works
+app.get("/", (req, res) => {
+    res.send("Hello World")
+})
+
 // Temporary Solution to Deprecation Warning
 mongoose.set("strictQuery", true);
 
