@@ -7,6 +7,7 @@ const dotenv = require("dotenv").config();
 // Initialise Express
 const app = express();
 
+// Temporary Solution to Deprecation Warning
 mongoose.set("strictQuery", true);
 
 // Establish Connection to MongoDB OR Use Port 5000
