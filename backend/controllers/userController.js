@@ -4,8 +4,9 @@ const jwt = require("jsonwebtoken")
 
 // Function to Generate Token assigned to User ID with Expiry of 1 Day
 const generateToken = (id) => {
-    return jwt.sign({id} , process.env.JWT_SECRET, {expiresIn: "1d"})
-}
+    return jwt.sign({id} , process.env.JWT_SECRET, {
+        expiresIn: "1d"});
+};
 
 const registerUser = asyncHandler( async (req, res) => {
     const {email, username, password} = req.body
@@ -34,6 +35,15 @@ const registerUser = asyncHandler( async (req, res) => {
 
     // Generate Token
     const token = generateToken(user._id);
+
+    // Send HTTP-only Cookie to Frontend
+    res.cookie("token", token, {
+        path: "/",
+        httpOnly: true,
+        expires: new Date(Date.now() + 1000 * 86400), // Expires after 24 Hours
+        sameSite: "none",
+        secure: true
+    });
 
     if (user) {
         const { _id, email, username } = user;
