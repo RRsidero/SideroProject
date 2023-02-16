@@ -1,6 +1,11 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
-const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken")
+
+// Function to Generate Token assigned to User ID with Expiry of 1 Day
+const generateToken = (id) => {
+    return jwt.sign({id} , process.env.JWT_SECRET, {expiresIn: "1d"})
+}
 
 const registerUser = asyncHandler( async (req, res) => {
     const {email, username, password} = req.body
@@ -20,7 +25,6 @@ const registerUser = asyncHandler( async (req, res) => {
         res.status(400);
         throw new Error("Email Already In Use!");
     }
-
     // Create New User
     const user = await User.create ({
         email,
@@ -28,13 +32,16 @@ const registerUser = asyncHandler( async (req, res) => {
         password,
     });
 
+    // Generate Token
+    const token = generateToken(user._id);
+
     if (user) {
-        const { _id, email, username, password } = user;
+        const { _id, email, username } = user;
         res.status(201).json ({
             _id,
             email,
             username,
-            password
+            token
         });
     } else {
         res.status(400);
