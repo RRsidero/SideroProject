@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv").config();
+const userRoute = require("./routes/userRoute");
+const errorHandler = require("./middleware/errorMiddleware");
 
 // Initialise Express
 const app = express();
@@ -12,9 +14,15 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+// Routes Middleware
+app.use("/api/users", userRoute);
+
+// Error Middleware
+app.use(errorHandler);
+
 // Test to See if GET Method Works
 app.get("/", (req, res) => {
-    res.send("Hello World")
+    res.send("Hello World");
 })
 
 // Temporary Solution to Deprecation Warning
