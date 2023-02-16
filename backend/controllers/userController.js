@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const user = require("../models/userModel"); 
+const User = require("../models/userModel"); 
 
 const registerUser = asyncHandler( async (req, res) => {
     const {email, username, password} = req.body
@@ -13,15 +13,31 @@ const registerUser = asyncHandler( async (req, res) => {
         res.status(400);
         throw new Error("Password must be Greater than 8 Characters")
     }
-    if (password.length > 30) {
-        res.status(400);
-        throw new Error("Password must be Less than 30 Characters")
-    }
     // Check if User Email Already Exists on the Database
-    const userExists = await user.findOne( {email} )
+    const userExists = await User.findOne( {email} )
     if (userExists) {
         res.status(400);
-        throw new Error("User Already Exists!");
+        throw new Error("Email Already In Use!");
+    }
+
+    // Create New User
+    const user = await User.create ({
+        email,
+        username,
+        password
+    });
+
+    if (user) {
+        const { _id, email, username, password } = user;
+        res.status(201).json ({
+            _id,
+            email,
+            username,
+            password
+        });
+    } else {
+        res.status(400);
+        throw new Error("Failed to Create User");
     }
 });
 
