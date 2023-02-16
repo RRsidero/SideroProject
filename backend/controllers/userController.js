@@ -21,15 +21,11 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new Error("Email Already In Use!");
     }
 
-    // Password Encryption before DB Upload
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
-
     // Create New User
     const user = await User.create ({
         email,
         username,
-        password: hashedPassword,
+        password,
     });
 
     if (user) {
