@@ -11,7 +11,6 @@ const generateToken = (id) => {
 // User Registration
 const registerUser = asyncHandler( async (req, res) => {
     const {email, username, password} = req.body
-
     // If Email OR Username OR Password not Entered
     if (!email || !username || !password) {
         res.status(400);
@@ -34,10 +33,8 @@ const registerUser = asyncHandler( async (req, res) => {
         username,
         password,
     });
-
     // Generate Token
     const token = generateToken(user._id);
-
     // Send HTTP-only Cookie to Frontend
     res.cookie("token", token, {
         path: "/",
@@ -79,7 +76,6 @@ const loginUser = asyncHandler (async (req, res) => {
     const passwordIsCorrect = await bcrypt.compare(password, user.password);
         // Generate Token
         const token = generateToken(user._id);
-
         // Send HTTP-only Cookie to Frontend
         res.cookie("token", token, {
             path: "/",
@@ -112,12 +108,13 @@ const logoutUser = asyncHandler (async (req, res) => {
         sameSite: "none",
         secure: true
     });
-    return res.status(200).json( { message: "Logout Successful"} )
+    return res.status(200).json( { message: "Logout Successful" } )
 });
 
 // Get User Data
 const getUser = asyncHandler (async (req, res) => {
-    const user = User.findById(req.user._id);
+    // Find User by ID
+    const user = await User.findById(req.user._id);
     // If User is Found Return Data
     if (user) {
         const { _id, email, username } = user;
