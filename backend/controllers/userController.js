@@ -12,11 +12,12 @@ const generateToken = (id) => {
 const registerUser = asyncHandler( async (req, res) => {
     const {email, username, password} = req.body
 
-    // Validation
+    // If Email OR Username OR Password not Entered
     if (!email || !username || !password) {
         res.status(400);
         throw new Error("Fill out All Required Fields")
     }
+    // If Password < 8 Characters Long
     if (password.length < 8) {
         res.status(400);
         throw new Error("Password must be Greater than 8 Characters")
@@ -45,7 +46,7 @@ const registerUser = asyncHandler( async (req, res) => {
         sameSite: "none",
         secure: true
     });
-
+    // If User Created Successfully then Display the Following
     if (user) {
         const { _id, email, username } = user;
         res.status(201).json ({
@@ -87,6 +88,7 @@ const loginUser = asyncHandler (async (req, res) => {
             sameSite: "none",
             secure: true
         });
+    // If Login Successful Display the Following
     if (user && passwordIsCorrect) {
         const { _id, email, username } = user;
         res.status(200).json ({
@@ -103,11 +105,24 @@ const loginUser = asyncHandler (async (req, res) => {
 
 // Logout User
 const logoutUser = asyncHandler (async (req, res) => {
-    res.send("Bye");
+    res.cookie("token", "", {
+        path: "/",
+        httpOnly: true,
+        expires: new Date(0), // Expires Instantly
+        sameSite: "none",
+        secure: true
+    });
+    return res.status(200).json( { message: "Logout Successful"} )
+});
+
+// Get User Data
+const getUser = asyncHandler (async (req, res) => {
+    res.send("Hi")
 });
 
 module.exports = {
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    getUser
 }
