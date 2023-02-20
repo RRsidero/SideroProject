@@ -5,11 +5,11 @@ const bcrypt = require("bcryptjs");
 
 // Function to Generate Token assigned to User ID with Expiry of 1 Day
 const generateToken = (id) => {
-    return jwt.sign({id} , process.env.JWT_SECRET, {
+    return jwt.sign( {id} , process.env.JWT_SECRET, {
         expiresIn: "1d"});
 };
 // User Registration
-const registerUser = asyncHandler( async (req, res) => {
+const registerUser = asyncHandler (async (req, res) => {
     const {email, username, password} = req.body
     // If Email OR Username OR Password not Entered
     if (!email || !username || !password) {
@@ -76,27 +76,30 @@ const loginUser = asyncHandler (async (req, res) => {
     const passwordIsCorrect = await bcrypt.compare(password, user.password);
         // Generate Token
         const token = generateToken(user._id);
-        // Send HTTP-only Cookie to Frontend
-        res.cookie("token", token, {
+        // If Password is Correct Generate Cookie
+        if (passwordIsCorrect) {
+            // Send HTTP-only Cookie to Frontend
+            res.cookie("token", token, {
             path: "/",
             httpOnly: true,
             expires: new Date(Date.now() + 1000 * 86400), // Expires after 24 Hours
             sameSite: "none",
             secure: true
-        });
-    // If Login Successful Display the Following
-    if (user && passwordIsCorrect) {
-        const { _id, email, username } = user;
-        res.status(200).json ({
-            _id,
-            email,
-            username,
-            token,
-        });
-    } else {
-        res.status(400);
-        throw new Error("Invalid Email or Password");
-    }
+            });
+        }
+        // If Email & Password are Correct Display the Following
+        if (user && passwordIsCorrect) {
+            const { _id, email, username } = user;
+            res.status(200).json ({
+                _id,
+                email,
+                username,
+                token,
+            });
+        } else {
+            res.status(400);
+            throw new Error("Invalid Email or Password");
+        }
 });
 
 // Logout User
@@ -111,11 +114,9 @@ const logoutUser = asyncHandler (async (req, res) => {
     return res.status(200).json( { message: "Logout Successful" } )
 });
 
-// Get User Data
+// Get User Details when Logged In
 const getUser = asyncHandler (async (req, res) => {
-    // Find User by ID
-    const user = await User.findById(req.user._id);
-    // If User is Found Return Data
+    const user = await User.findById(req.user._id)
     if (user) {
         const { _id, email, username } = user;
         res.status(200).json ({
@@ -125,13 +126,31 @@ const getUser = asyncHandler (async (req, res) => {
         });
     } else {
         res.status(400);
-        throw new Error ("User not Found");
+        throw new Error("User not Found");
     }
+});
+
+// Verify Login
+const loginStatus = asyncHandler (async (req, res) => {
+    const token = req.cookies.token;
+    // If Token Doesn't Exist
+    if (!token) {
+        return res.json(false);
+    }
+    // Token Verification
+    const verify = jwt.verify(token, process.env.JWT_SECRET);
+    // If Token is Verified then User must be Logged in
+    if (verify) {
+        return res.json(true);
+    }
+    // Return False if Not Logged in
+    return res.json(false);
 });
 
 module.exports = {
     registerUser,
     loginUser,
     logoutUser,
-    getUser
+    getUser,
+    loginStatus,
 }
