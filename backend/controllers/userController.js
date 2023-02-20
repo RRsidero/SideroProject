@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { use } = require("../routes/userRoute");
 
 // Function to Generate Token assigned to User ID with Expiry of 1 Day
 const generateToken = (id) => {
@@ -147,10 +148,33 @@ const loginStatus = asyncHandler (async (req, res) => {
     return res.json(false);
 });
 
+// Update User
+const updateUser = asyncHandler (async (req, res) => {
+    // Find User by ID
+    const user = await User.findById(req.user._id);
+    // If User has been Found then Update User
+    if (user) {
+        const { _id, email, username } = user;
+        user.email = email; // Cannot Update Email
+        user.name = req.body.username || username;
+
+        const updatedUser = await user.save();
+        res.status(200).json ({
+            _id: updatedUser._id,
+            email: updatedUser._email,
+            username: updatedUser._username,
+        })
+    } else {
+        res.status(404)
+        throw new Error ("User not Found")
+    }
+});
+
 module.exports = {
     registerUser,
     loginUser,
     logoutUser,
     getUser,
     loginStatus,
+    updateUser,
 }
