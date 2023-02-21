@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
-const protectRoute = asyncHandler(async (req, res, next) => {
+const protectRoute = asyncHandler (async (req, res, next) => {
     try {
         const token = req.cookies.token;
         // If Token Doesn't Exist
@@ -13,7 +13,7 @@ const protectRoute = asyncHandler(async (req, res, next) => {
         // Token Verification
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         // Get User ID from Token
-        const user = await User.findById(verified._id).select("-password");
+        const user = await User.findById(verified.id).select("-password");
         // If User Doesn't Exist
         if (!user) {
             res.status(401);

@@ -10,19 +10,19 @@ const generateToken = (id) => {
 };
 // User Registration
 const registerUser = asyncHandler (async (req, res) => {
-    const {email, username, password} = req.body
+    const {email, username, password} = req.body;
     // If Email OR Username OR Password not Entered
     if (!email || !username || !password) {
         res.status(400);
-        throw new Error("Fill out All Required Fields")
+        throw new Error("Fill out All Required Fields");
     }
     // If Password < 8 Characters Long
     if (password.length < 8) {
         res.status(400);
-        throw new Error("Password must be Greater than 8 Characters")
+        throw new Error("Password must be Greater than 8 Characters");
     }
     // Check if User Email Already Exists on the Database
-    const userExists = await User.findOne( {email} )
+    const userExists = await User.findOne( {email} );
     if (userExists) {
         res.status(400);
         throw new Error("Email Already In Use!");
@@ -67,7 +67,7 @@ const loginUser = asyncHandler (async (req, res) => {
         throw new Error("Please Add Email & Password");
     }
     // Check if Information is Valid
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email });
     if (!user) {
         res.status(400);
         throw new Error("User Doesn't Exist");
@@ -116,7 +116,7 @@ const logoutUser = asyncHandler (async (req, res) => {
 
 // Get User Details when Logged In
 const getUser = asyncHandler (async (req, res) => {
-    const user = await User.findById(req.user._id)
+    const user = await User.findById(req.user._id);
     if (user) {
         const { _id, email, username } = user;
         res.status(200).json ({
@@ -153,7 +153,7 @@ const updateUser = asyncHandler (async (req, res) => {
     const user = await User.findById(req.user._id);
     // If User has been Found then Update User
     if (user) {
-        const { _id, email, username } = user;
+        const { email, username } = user;
         user.email = email; // Cannot Update Email
         user.name = req.body.username || username;
         // Return Updated User Data
@@ -169,6 +169,38 @@ const updateUser = asyncHandler (async (req, res) => {
     }
 });
 
+// Update Password if Previous Password is Already Known
+const passwordUpdate = asyncHandler (async (req, res ) => {
+    // Find User on DB Using ID
+    const user = await User.findById(req.user._id);
+    // Declare Old & New Password to be Read
+    const {
+        oldPassword,
+        newPassword
+    } = req.body;
+    // Check if User Exists
+    if (!user) {
+        res.status.apply(400);
+        throw new Error ("User not Found");
+    }
+    // Validation to see if Details were Entered
+    if (!oldPassword || !newPassword) {
+        res.status(400);
+        throw new Error("Please Fill out Fields");
+    }
+    // Check if Old Password Matches Password in DB
+    const passwordIsCorrect = await bcrypt.compare(oldPassword, user.password);
+    // Save New Password
+    if (user && passwordIsCorrect) {
+        user.password = newPassword;
+        await user.save();
+        res.status(200).send("Password Changed Successfully");
+    } else {
+        res.status(400);
+        throw new Error("Old Password is Incorrect, Please try Again");
+    }
+});
+
 module.exports = {
     registerUser,
     loginUser,
@@ -176,4 +208,5 @@ module.exports = {
     getUser,
     loginStatus,
     updateUser,
+    passwordUpdate,
 }
