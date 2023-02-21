@@ -11,9 +11,9 @@ const protectRoute = asyncHandler(async (req, res, next) => {
             throw new Error("Not Authorized, Please Login");
         }
         // Token Verification
-        const verify = jwt.verify(token, process.env.JWT_SECRET);
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
         // Get User ID from Token
-        const user = await User.findById(verify._id).select("-password");
+        const user = await User.findById(verified._id).select("-password");
         // If User Doesn't Exist
         if (!user) {
             res.status(401);

@@ -15,6 +15,6 @@ route.post("/login", loginUser);
 route.get("/logout", logoutUser);
 route.get("/getUser", protectRoute, getUser);
 route.get("/loginStatus", loginStatus);
-route.patch("/updateUser",protectRoute, updateUser)
+route.patch("/updateUser", protectRoute, updateUser)
 
 module.exports = route;

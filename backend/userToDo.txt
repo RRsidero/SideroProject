@@ -1,0 +1,9 @@
+User Register
+User Login
+Logout
+Fetch User Details
+Login Status
+Update User Info
+Change Password
+Forget Password
+Reset Password
