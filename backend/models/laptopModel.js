@@ -23,12 +23,12 @@ const laptopSchema = mongoose.Schema ({
         type: String,
     },
     note: {
-        type: Text
+        type: String,
     },
     status: {
-        type: String
+        type: String,
     }
 })
 
-const laptop = mongoose.model("Laptop", laptopSchema)
-module.exports = laptop
+const Laptop = mongoose.model("Laptop", laptopSchema);
+module.exports = Laptop;

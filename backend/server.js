@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const dotenv = require("dotenv").config();
 const userRoute = require("./routes/userRoute");
+const laptopRoute = require("./routes/laptopRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
 
 // Initialise Express
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 
 // Routes Middleware
 app.use("/api/users", userRoute);
+app.use("/api/laptops", laptopRoute);
 
 // Error Middleware
 app.use(errorHandler);

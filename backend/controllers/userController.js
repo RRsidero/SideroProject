@@ -5,12 +5,12 @@ const bcrypt = require("bcryptjs");
 
 // Function to Generate Token assigned to User ID with Expiry of 1 Day
 const generateToken = (id) => {
-    return jwt.sign( {id} , process.env.JWT_SECRET, {
+    return jwt.sign({ id } , process.env.JWT_SECRET, {
         expiresIn: "1d"});
 };
 // User Registration
 const registerUser = asyncHandler (async (req, res) => {
-    const {email, username, password} = req.body;
+    const { email, username, password } = req.body;
     // If Email OR Username OR Password not Entered
     if (!email || !username || !password) {
         res.status(400);
@@ -70,7 +70,7 @@ const loginUser = asyncHandler (async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
         res.status(400);
-        throw new Error("User Doesn't Exist");
+        throw new Error("User Doesn't , Please Register");
     }
     // User Exists => Password Validation
     const passwordIsCorrect = await bcrypt.compare(password, user.password);
@@ -80,11 +80,11 @@ const loginUser = asyncHandler (async (req, res) => {
     if (passwordIsCorrect) {
         // Send HTTP-only Cookie to Frontend
         res.cookie("token", token, {
-        path: "/",
-        httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 86400), // Expires after 24 Hours
-        sameSite: "none",
-        secure: true
+            path: "/",
+            httpOnly: true,
+            expires: new Date(Date.now() + 1000 * 86400), // Expires after 24 Hours
+            sameSite: "none",
+            secure: true,
         });
     }
     // If Email & Password are Correct Display the Following
@@ -130,13 +130,15 @@ const getUser = asyncHandler (async (req, res) => {
     }
 });
 
-// Verify Login
+// Verify Login Status
 const loginStatus = asyncHandler (async (req, res) => {
     const token = req.cookies.token;
     // If Token Doesn't Exist
+    /*
     if (!token) {
         return res.json(false);
     }
+    */
     // Token Verification
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     // If Token is Verified then User must be Logged in
