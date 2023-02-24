@@ -4,8 +4,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 // Function to Generate Token assigned to User ID with Expiry of 1 Day
-const generateToken = (id) => {
-    return jwt.sign({ id } , process.env.JWT_SECRET, {
+const generateToken = (_id) => {
+    return jwt.sign({ _id } , process.env.JWT_SECRET, {
         expiresIn: "1d"});
 };
 // User Registration
@@ -134,11 +134,9 @@ const getUser = asyncHandler (async (req, res) => {
 const loginStatus = asyncHandler (async (req, res) => {
     const token = req.cookies.token;
     // If Token Doesn't Exist
-    /*
     if (!token) {
         return res.json(false);
     }
-    */
     // Token Verification
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     // If Token is Verified then User must be Logged in
@@ -162,8 +160,8 @@ const updateUser = asyncHandler (async (req, res) => {
         const updatedUser = await user.save();
         res.status(200).json ({
             _id: updatedUser._id,
-            email: updatedUser._email,
-            username: updatedUser._username,
+            email: updatedUser.email,
+            username: updatedUser.username,
         })
     } else {
         res.status(404)

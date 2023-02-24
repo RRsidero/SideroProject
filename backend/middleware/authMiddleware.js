@@ -13,7 +13,7 @@ const protectRoute = asyncHandler (async (req, res, next) => {
         // Token Verification
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         // Get User ID from Token
-        const user = await User.findById(verified.id).select("-password");
+        const user = await User.findById(verified._id).select("-password");
         // If User Doesn't Exist
         if (!user) {
             res.status(401);
