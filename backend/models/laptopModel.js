@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const laptopSchema = mongoose.Schema ({
+    company: {
+        type: String,
+    },
     serialNo: {
         type: String,
     },
@@ -11,6 +14,9 @@ const laptopSchema = mongoose.Schema ({
         type: String,
     },
     model: {
+        type: String,
+    },
+    status: {
         type: String,
     },
     ram: {
@@ -25,9 +31,6 @@ const laptopSchema = mongoose.Schema ({
     note: {
         type: String,
     },
-    status: {
-        type: String,
-    }
 })
 
 const Laptop = mongoose.model("Laptop", laptopSchema);
